@@ -1,11 +1,17 @@
 //olivia bloom
 //final project fall 2019
+var octopus;
+
+function preload(){
+	octopus = loadAnimation('assets/octopus001.png','assets/octopus003.png');
+}
+
 function setup() {
-  createCanvas(800,400);
-  createSprite(400, 200, 50, 50);
+  createCanvas(1000,1000);
 }
 
 function draw() {
   background(255,255,255);  
-  drawSprites();
+  animation(octopus, 500,500);
+  
 }
