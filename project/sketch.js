@@ -66,4 +66,9 @@ function draw() {
   if(octopus.position.y > sceneheight){
     octopus.position.y = sceneheight;
 	}
+	
+	//virtual camera movement is effected by the mouse
+	//speed is inversely proportional to the mouse distance, furthur mouse gets, faster the scene moves
+  octopus.velocity.x = (camera.mouseX-octopus.position.x)/20;
+  octopus.velocity.y = (camera.mouseY-octopus.position.y)/20;
 }
