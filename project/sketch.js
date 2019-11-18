@@ -53,9 +53,8 @@ function draw() {
 	stayinsketch();
 	speed();
 	
-	if(shrimp.collide(octopus)){
-		eatshrimp();
-	}
+	//test if overlapping with shrimps prites, if so run eatshrimp function
+	octopus.overlap(shrimpsprites, eatshrimp);
 }
 
 //custom functions
@@ -68,7 +67,7 @@ function makebackgroundsprites(){
     //create sprite and add the 3 animations
     var stone = createSprite(random(-width, scenewidth+width), random(-height, sceneheight+height));
 		
-    //cycles through to choose stone 0, 1, or 2 for each round of the for loop
+    //cycles through to choose stone 0, 1, or 2 for each round of the for loop and adds to Group
 		stone.addAnimation('normal', 'stone'+i%3+'.png');
     backgd.add(stone);
   }
@@ -83,7 +82,7 @@ function makeshrimpsprites(){
 		//create shrimp sprite and animate it, put at a random location in the sketch
 		shrimp = createSprite(random(0, scenewidth), random(0, sceneheight));
 		
-		//animates
+		//animates and adds to Group
 		shrimp.addAnimation('normal','shrimp001.png','shrimp002.png','shrimp003.png');
 		shrimpsprites.add(shrimp);
 	}
@@ -119,8 +118,11 @@ function speed(){
   octopus.velocity.y = (camera.mouseY-octopus.position.y)/20;
 }
 
-function eatshrimp(){
-	shrimp.remove();
+function eatshrimp(collector,collected){
+	//increase score
 	count++;
 	print(count+" ");
+  //collected is the sprite in the group shrimpsprites that triggered the event
+	//delete the shrimp
+  collected.remove();
 }
