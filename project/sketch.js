@@ -52,6 +52,7 @@ function draw() {
 	cameraposition();
 	stayinsketch();
 	speed();
+	keepscore();
 	
 	//test if overlapping with shrimps prites, if so run eatshrimp function
 	octopus.overlap(shrimpsprites, eatshrimp);
@@ -118,10 +119,18 @@ function speed(){
   octopus.velocity.y = (camera.mouseY-octopus.position.y)/20;
 }
 
+function keepscore(){
+	//print the current score out of 20
+	fill(255);
+	textSize(20);
+	text(count+' / 20',octopus.position.x-25,octopus.position.y-60);
+
+}
+
 function eatshrimp(collector,collected){
 	//increase score
 	count++;
-	print(count+" ");
+	//print(count+" ");
   //collected is the sprite in the group shrimpsprites that triggered the event
 	//delete the shrimp
   collected.remove();
