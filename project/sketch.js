@@ -5,6 +5,8 @@ var scenewidth;
 var sceneheight;
 var backgd;
 var shrimpsprites;
+var shrimp;
+var count;
 
 //preload to load animations
 function preload(){
@@ -17,15 +19,19 @@ function preload(){
 //static
 function setup() {
 	//create canvas
-  createCanvas(700,700); 
+  createCanvas(900,900); 
 	
 	//instantiation of variables
 	scenewidth = 1600; 
-	sceneheight = 800;
+	sceneheight = 1000;
 	
 	//call functions
 	makebackgroundsprites();
 	makeshrimpsprites();
+	
+	//instantiate
+	count = 0;
+	
 }
 
 //active
@@ -46,6 +52,10 @@ function draw() {
 	cameraposition();
 	stayinsketch();
 	speed();
+	
+	if(shrimp.collide(octopus)){
+		eatshrimp();
+	}
 }
 
 //custom functions
@@ -54,7 +64,7 @@ function makebackgroundsprites(){
 	backgd = new Group();
 	
 	//create background
-  for(var i=0; i<80; i++){
+  for(var i=0; i<120; i++){
     //create sprite and add the 3 animations
     var stone = createSprite(random(-width, scenewidth+width), random(-height, sceneheight+height));
 		
@@ -71,12 +81,13 @@ function makeshrimpsprites(){
 	//create shrimp
 	for(var i=0; i<20;i++){
 		//create shrimp sprite and animate it, put at a random location in the sketch
-		var shrimp = createSprite(random(-width, scenewidth+width), random(-height, sceneheight+height));
+		shrimp = createSprite(random(0, scenewidth), random(0, sceneheight));
 		
 		//animates
 		shrimp.addAnimation('normal','shrimp001.png','shrimp002.png','shrimp003.png');
 		shrimpsprites.add(shrimp);
 	}
+
 }
 
 function cameraposition(){
@@ -106,4 +117,10 @@ function speed(){
 	//speed is inversely proportional to the mouse distance, furthur mouse gets, faster the scene moves
   octopus.velocity.x = (camera.mouseX-octopus.position.x)/20;
   octopus.velocity.y = (camera.mouseY-octopus.position.y)/20;
+}
+
+function eatshrimp(){
+	shrimp.remove();
+	count++;
+	print(count+" ");
 }
