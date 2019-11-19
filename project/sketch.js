@@ -22,8 +22,8 @@ function setup() {
   createCanvas(900,900); 
 	
 	//instantiation of variables
-	scenewidth = 1600; 
-	sceneheight = 1000;
+	scenewidth = 3000; 
+	sceneheight = 3000;
 	
 	//call functions
 	makebackgroundsprites();
@@ -36,8 +36,9 @@ function setup() {
 
 //active
 function draw() {
-	//clear background
+	//clear background and check for direction
 	background(0,50,100);
+	whatdirection();
 	
 	//make background w/stones
 	drawSprites(backgd);
@@ -56,6 +57,9 @@ function draw() {
 	
 	//test if overlapping with shrimps prites, if so run eatshrimp function
 	octopus.overlap(shrimpsprites, eatshrimp);
+	
+	//check to see if the score is 20/20
+	checkscore();
 }
 
 //custom functions
@@ -64,7 +68,7 @@ function makebackgroundsprites(){
 	backgd = new Group();
 	
 	//create background
-  for(var i=0; i<120; i++){
+  for(var i=0; i<400; i++){
     //create sprite and add the 3 animations
     var stone = createSprite(random(-width, scenewidth+width), random(-height, sceneheight+height));
 		
@@ -119,12 +123,33 @@ function speed(){
   octopus.velocity.y = (camera.mouseY-octopus.position.y)/20;
 }
 
+function whatdirection(){
+	//test function to use with sound depending on what direction the user is going
+	if(octopus.velocity.y>=0){
+		//if going down
+		background(255,0,0);
+	}else if(octopus.velocity.y<0){
+		background(0,255,0);
+	}
+}
+
 function keepscore(){
 	//print the current score out of 20
 	fill(255);
 	textSize(20);
 	text(count+' / 20',octopus.position.x-25,octopus.position.y-60);
+}
 
+function checkscore(){
+	//if score is 20/20, tell the player they've won
+	//need to add option to play again on a button
+	if(count == 20){
+		background(255);
+		fill(0);
+		textSize(70);
+		text('you won!', octopus.position.x,octopus.position.y);
+		//figure out where to put button so it doesn't get lost and how to make that button actually restart the program
+	}
 }
 
 function eatshrimp(collector,collected){
