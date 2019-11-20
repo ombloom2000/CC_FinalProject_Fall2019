@@ -8,7 +8,10 @@ var oceansound;
 var soundmap;
 var shrimpsprites;
 var shrimp;
+var villain;
+var villainsprites;
 var count;
+var button;
 
 //preload to load animations
 function preload(){
@@ -32,6 +35,7 @@ function setup(){
 	//call functions
 	makebackgroundsprites();
 	makeshrimpsprites();
+	makevillainsprites();
 	
 	//instantiate
 	count = 0;
@@ -60,11 +64,15 @@ function draw() {
 	//make shrimp sprites w/animation
 	drawSprites(shrimpsprites);
 	
+	//make villain sprites w/animation
+	drawSprites(villainsprites);
+	
 	//call functions
 	cameraposition();
 	stayinsketch();
 	speed();
 	keepscore();
+	//buttonClicked();
 	
 	//test if overlapping with shrimps prites, if so run eatshrimp function
 	octopus.overlap(shrimpsprites, eatshrimp);
@@ -105,7 +113,23 @@ function makeshrimpsprites(){
 
 }
 
-function cameraposition(){
+function makevillainsprites(){
+	//instantiation of group of sprites through Group class, a type of extended array
+	villainsprites = new Group();
+	
+	//create villains
+	for(var i=0; i<2;i++){
+		//create villain sprite and animate it
+		villain = createSprite(octopus.position.x-100, octopus.position.y+100);
+		
+		//animates and adds to group
+		villain.addAnimation('villain001.png','villain002.png','villain003.png');
+		villainsprites.add(villain);
+	}
+}
+
+
+	function cameraposition(){
 	//set the camera position to the octopus position so the camera keeps the octopus in frame
   camera.position.x =octopus.position.x;
   camera.position.y =octopus.position.y;
@@ -141,18 +165,6 @@ function keepscore(){
 	text(count+' / 20',octopus.position.x-25,octopus.position.y-60);
 }
 
-function checkscore(){
-	//if score is 20/20, tell the player they've won
-	//need to add option to play again on a button
-	if(count == 20){
-		background(255);
-		fill(0);
-		textSize(70);
-		text('you won!', octopus.position.x,octopus.position.y);
-		//figure out where to put button so it doesn't get lost and how to make that button actually restart the program
-	}
-}
-
 function eatshrimp(collector,collected){
 	//increase score
 	count++;
@@ -161,3 +173,31 @@ function eatshrimp(collector,collected){
 	//delete the shrimp
   collected.remove();
 }
+
+function checkscore(){
+	//if score is 20/20, tell the player they've won
+	//stops loop of program
+	//play again on a button with a double click
+	if(count == 20){
+		noLoop();
+		oceansound.amp(0.0);
+		background(0,50,100);
+		fill(255);
+		textSize(70);
+		textFont('Helvetica');
+		text('YOU WON', octopus.position.x, octopus.position.y);
+	  }
+	}
+		//how to make that button actually restart the program
+		/*button = createButton('PLAY AGAIN?');
+    button.position(width/2-50,height/2+75);
+		button.mousePressed(buttonClicked);
+	}
+}
+
+function buttonClicked(){
+	//checks for the button being clicked, which sets the count back to zero, removes the button, and resumes the draw loop
+		loop();
+		//count=0;
+		//removeElements(button);
+}*/
