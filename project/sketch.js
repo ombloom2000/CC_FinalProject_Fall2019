@@ -4,6 +4,8 @@ var octoanimation;
 var scenewidth;
 var sceneheight;
 var backgd;
+var oceansound;
+var soundmap;
 var shrimpsprites;
 var shrimp;
 var count;
@@ -14,10 +16,12 @@ function preload(){
 	octopus = createSprite(350,350,50,100);
 	//create an animation for cotupus from img 001 to 005
 	octoanimation = octopus.addAnimation('float','octopus001.png', 'octopus005.png'); 
+	//load sound to be manipulated
+	oceansound = loadSound('water.wav');
 }
 
 //static
-function setup() {
+function setup(){
 	//create canvas
   createCanvas(900,900); 
 	
@@ -31,14 +35,21 @@ function setup() {
 	
 	//instantiate
 	count = 0;
-	
 }
 
 //active
 function draw() {
-	//clear background and check for direction
+	
+	//update map variable of amplitude and octopus y position
+	soundmap = map(octopus.position.y,-20.5,3013.2,0.01,0.5);
+	//print(soundmap);
+	
+	//change amplitude and play sound depending on mapped y value
+	oceansound.amp(soundmap);
+	oceansound.play();
+	
+	//clear background
 	background(0,50,100);
-	whatdirection();
 	
 	//make background w/stones
 	drawSprites(backgd);
@@ -121,16 +132,6 @@ function speed(){
 	//speed is inversely proportional to the mouse distance, furthur mouse gets, faster the scene moves
   octopus.velocity.x = (camera.mouseX-octopus.position.x)/20;
   octopus.velocity.y = (camera.mouseY-octopus.position.y)/20;
-}
-
-function whatdirection(){
-	//test function to use with sound depending on what direction the user is going
-	if(octopus.velocity.y>=0){
-		//if going down
-		background(255,0,0);
-	}else if(octopus.velocity.y<0){
-		background(0,255,0);
-	}
 }
 
 function keepscore(){
