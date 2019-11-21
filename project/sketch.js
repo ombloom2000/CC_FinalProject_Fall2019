@@ -15,6 +15,7 @@ var ypos;
 var villain;
 var villainanimation;
 var backmap;
+var speedy;
 
 //preload to load animations
 function preload(){
@@ -24,8 +25,8 @@ function preload(){
 	octoanimation = octopus.addAnimation('float','octopus001.png', 'octopus005.png'); 
 	//load sound to be manipulated
 	oceansound = loadSound('water.wav');
-	//creat villain sprite at random location
-	villain = createSprite(random(0, scenewidth), random(0, sceneheight));
+	//creat villain sprite
+	villain = createSprite();
 	//create an animation for villain fron 001 to 003
   villainanimation = villain.addAnimation('move','villain001.png','villain003.png'); 
 }
@@ -45,22 +46,21 @@ function setup(){
 	
 	//instantiate
 	count = 0;
+	speedy = 5;
 }
 
 //active
 function draw() {
-	
 	//update map variable of amplitude and octopus y position
 	soundmap = map(octopus.position.y,-20.5,3013.2,0.01,0.5);
-	//print(soundmap);
+	//update map variable of background color and octopus y position
 	backmap = map(octopus.position.y,-20.5,3013.2,130,80);
 	
 	//change amplitude and play sound depending on mapped y value
 	oceansound.amp(soundmap);
 	oceansound.play();
 	
-	//clear background
-	//background(0,50,100);
+	//clear background and change darkness with "depth"
 	background(0,30,backmap);
 	
 	//make background w/stones
@@ -78,9 +78,9 @@ function draw() {
 	//call functions
 	cameraposition();
 	stayinsketch();
-	speed();
+	movespeed();
 	keepscore();
-	//buttonClicked();
+	movevillain();
 	
 	//test if overlapping with shrimps prites, if so run eatshrimp function
 	octopus.overlap(shrimpsprites, eatshrimp);
@@ -90,6 +90,18 @@ function draw() {
 }
 
 //custom functions
+function movevillain(){
+	villain.position.x+=speedy;
+	if (villain.position.x >= scenewidth+width/2 || villain.position.x<=-width+width/2) { //reverse direction if ball goes out of bounds
+    speedy=speedy*-1; //reverse direction of speed variable
+  }
+	if(speedy>0){
+			villain.mirrorX(-1);
+		}else{
+			villain.mirrorX(1);
+		}
+}
+
 function makebackgroundsprites(){
 	//instantiation of group of sprites through Group class, a type of extended array
 	backgd = new Group();
@@ -142,9 +154,9 @@ function stayinsketch(){
 	}
 }
 
-function speed(){
+function movespeed(){
 	//virtual camera movement is effected by the mouse
-	//speed is inversely proportional to the mouse distance, furthur mouse gets, faster the scene moves
+	//speed is inversely proportional to the mouse distance, further mouse gets, faster the scene moves
   octopus.velocity.x = (camera.mouseX-octopus.position.x)/20;
   octopus.velocity.y = (camera.mouseY-octopus.position.y)/20;
 }
