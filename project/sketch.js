@@ -8,19 +8,26 @@ var oceansound;
 var soundmap;
 var shrimpsprites;
 var shrimp;
-var villain;
-var villainsprites;
 var count;
 var button;
+var xpos;
+var ypos;
+var villain;
+var villainanimation;
+var backmap;
 
 //preload to load animations
 function preload(){
 	//create sprite at given location, width and height
 	octopus = createSprite(350,350,50,100);
-	//create an animation for cotupus from img 001 to 005
+	//create an animation for octopus from img 001 to 005
 	octoanimation = octopus.addAnimation('float','octopus001.png', 'octopus005.png'); 
 	//load sound to be manipulated
 	oceansound = loadSound('water.wav');
+	//creat villain sprite at random location
+	villain = createSprite(random(0, scenewidth), random(0, sceneheight));
+	//create an animation for villain fron 001 to 003
+  villainanimation = villain.addAnimation('move','villain001.png','villain003.png'); 
 }
 
 //static
@@ -35,7 +42,6 @@ function setup(){
 	//call functions
 	makebackgroundsprites();
 	makeshrimpsprites();
-	makevillainsprites();
 	
 	//instantiate
 	count = 0;
@@ -47,13 +53,15 @@ function draw() {
 	//update map variable of amplitude and octopus y position
 	soundmap = map(octopus.position.y,-20.5,3013.2,0.01,0.5);
 	//print(soundmap);
+	backmap = map(octopus.position.y,-20.5,3013.2,130,80);
 	
 	//change amplitude and play sound depending on mapped y value
 	oceansound.amp(soundmap);
 	oceansound.play();
 	
 	//clear background
-	background(0,50,100);
+	//background(0,50,100);
+	background(0,30,backmap);
 	
 	//make background w/stones
 	drawSprites(backgd);
@@ -64,8 +72,8 @@ function draw() {
 	//make shrimp sprites w/animation
 	drawSprites(shrimpsprites);
 	
-	//make villain sprites w/animation
-	drawSprites(villainsprites);
+	//make villain
+	drawSprite(villain);
 	
 	//call functions
 	cameraposition();
@@ -110,24 +118,7 @@ function makeshrimpsprites(){
 		shrimp.addAnimation('normal','shrimp001.png','shrimp002.png','shrimp003.png');
 		shrimpsprites.add(shrimp);
 	}
-
 }
-
-function makevillainsprites(){
-	//instantiation of group of sprites through Group class, a type of extended array
-	villainsprites = new Group();
-	
-	//create villains
-	for(var i=0; i<2;i++){
-		//create villain sprite and animate it
-		villain = createSprite(octopus.position.x-100, octopus.position.y+100);
-		
-		//animates and adds to group
-		villain.addAnimation('villain001.png','villain002.png','villain003.png');
-		villainsprites.add(villain);
-	}
-}
-
 
 	function cameraposition(){
 	//set the camera position to the octopus position so the camera keeps the octopus in frame
