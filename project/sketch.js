@@ -15,7 +15,9 @@ var ypos;
 var villain;
 var villainanimation;
 var backmap;
+var speedx;
 var speedy;
+var timer;
 
 //preload to load animations
 function preload(){
@@ -25,7 +27,7 @@ function preload(){
 	octoanimation = octopus.addAnimation('float','octopus001.png', 'octopus005.png'); 
 	//load sound to be manipulated
 	oceansound = loadSound('water.wav');
-	//creat villain sprite
+	//create villain sprite
 	villain = createSprite();
 	//create an animation for villain fron 001 to 003
   villainanimation = villain.addAnimation('move','villain001.png','villain003.png'); 
@@ -46,7 +48,9 @@ function setup(){
 	
 	//instantiate
 	count = 0;
+	speedx = 5;
 	speedy = 5;
+	timer = random(1000,3000);
 }
 
 //active
@@ -85,21 +89,32 @@ function draw() {
 	//test if overlapping with shrimps prites, if so run eatshrimp function
 	octopus.overlap(shrimpsprites, eatshrimp);
 	
+	octopus.bounce(villain,villainbump);
+	
 	//check to see if the score is 20/20
 	checkscore();
 }
 
 //custom functions
 function movevillain(){
-	villain.position.x+=speedy;
-	if (villain.position.x >= scenewidth+width/2 || villain.position.x<=-width+width/2) { //reverse direction if ball goes out of bounds
-    speedy=speedy*-1; //reverse direction of speed variable
+	villain.position.x+=speedx;
+	villain.position.y+=speedy;
+	if (villain.position.x >= scenewidth+width/2 || villain.position.x<=-width+width/2) { //reverse direction if goes out of bounds
+    speedy=speedx*-1; //reverse direction of speed variable
   }
-	if(speedy>0){
+	if(speedx>0){
 			villain.mirrorX(-1);
 		}else{
 			villain.mirrorX(1);
 		}
+	if (villain.position.y >= sceneheight+height/2 || villain.position.y<=-height+height/2) { //reverse direction if goes out of bounds
+    speedy=speedy*-1; //reverse direction of speed variable
+  }
+	if (millis() > timer){
+     speedx = random(-1,5);
+     speedy = random(-1,5);
+     timer = timer + random(1000,3000);
+   }
 }
 
 function makebackgroundsprites(){
@@ -175,6 +190,10 @@ function eatshrimp(collector,collected){
   //collected is the sprite in the group shrimpsprites that triggered the event
 	//delete the shrimp
   collected.remove();
+}
+
+function villainbump(){
+	count = 0;
 }
 
 function checkscore(){
