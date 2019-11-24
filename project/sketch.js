@@ -10,14 +10,12 @@ var shrimpsprites;
 var shrimp;
 var count;
 var button;
-var xpos;
-var ypos;
 var villain;
 var villainsprites;
-var posx;
-var posy;
-var T;
-var t;
+var xspeed;
+var yspeed;
+var xdirection;
+var ydirection;
 var backmap;
 var previouscount;
 
@@ -47,6 +45,10 @@ function setup(){
 	
 	//instantiate
 	count = 0;
+	xspeed = 2.8;
+	yspeed = 2.2;
+	xdirection = 1; // Left or Right
+  ydirection = 1; //up or down
 }
 
 //active
@@ -90,18 +92,6 @@ function draw() {
 }
 
 //custom functions
-function movevillains(){
-	//for each villain sprite, do something
-	for(var i = 0; i<villainsprites.length; i++) {
-		//give a variable v to the current villain sprite
-    var v = villainsprites[i];
-    //moving all the villains
-    
-		//test if villains and octopus overlap, if so run villainbump function
-		octopus.overlap(v,villainbump);
-  }
-}
-
 function makebackgroundsprites(){
 	//instantiation of group of sprites through Group class, a type of extended array
 	backgd = new Group();
@@ -140,6 +130,7 @@ function makevillainsprites(){
 	for(var i=0; i<5; i++){
 		//create villain sprite and animate it, put at a random location in the sketch
 		villain = createSprite(random(0, scenewidth), random(0, sceneheight));
+		villain.mirrorX(-1);
 		
 		//animates and adds to Group
 		villain.addAnimation('villain001.png','villain002.png','villain003.png');
@@ -181,6 +172,29 @@ function keepscore(){
 	fill(255);
 	textSize(20);
 	text(count+' / 20',octopus.position.x-25,octopus.position.y-60);
+}
+
+function movevillains(){
+	//for each villain sprite, do something
+	for(var i = 0; i<villainsprites.length; i++) {
+		//give a variable v to the current villain sprite
+    var v = villainsprites[i];
+    //moving all the villains
+		v.position.x += xspeed * xdirection;
+    v.position.y += yspeed * ydirection;
+		
+		if (v.position.x > 3000 || v.position.x < 0) { //not working
+      xdirection *= -1;
+    }
+    if (v.position.y > 3000 || v.position.y < 0) {
+      ydirection *= -1;
+    }
+		if(xdirection == -1){
+			v.mirrorX(1); //not working
+		}
+		//test if villains and octopus overlap, if so run villainbump function
+		octopus.overlap(v,villainbump);
+  }
 }
 
 function eatshrimp(collector,collected){
