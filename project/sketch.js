@@ -14,9 +14,12 @@ var xpos;
 var ypos;
 var villain;
 var villainsprites;
-var speedx;
-var speedy;
+var posx;
+var posy;
+var T;
+var t;
 var backmap;
+var previouscount;
 
 //preload to load animations
 function preload(){
@@ -44,8 +47,6 @@ function setup(){
 	
 	//instantiate
 	count = 0;
-	constrain(villain.position.y,-height,height);
-	constrain(villain.position.x,-width,width);
 }
 
 //active
@@ -79,44 +80,26 @@ function draw() {
 	stayinsketch();
 	movespeed();
 	keepscore();
-	for(var i = 0; i<villainsprites.length; i++) {
-    var v = villainsprites[i];
-    //moving all the villains
-    v.position.y += sin(frameCount/10);
-		octopus.overlap(v,villainbump);
-  }
+	movevillains();
 	
 	//test if overlapping with shrimps prites, if so run eatshrimp function
 	octopus.overlap(shrimpsprites, eatshrimp);
-	
-	//octopus.bounce(villain,villainbump);
 	
 	//check to see if the score is 20/20
 	checkscore();
 }
 
 //custom functions
-function movevillain(){
-	speedx = 5;
-	speedy = 5;
-	villain.position.x+=random(-speedx,speedx);
-	villain.position.y+=random(-speedy,speedy);
-	if (villain.position.x >= scenewidth+width/2 || villain.position.x<=-width+width/2) { //reverse direction if goes out of bounds
-    speedy=speedx*-1; //reverse direction of speed variable
+function movevillains(){
+	//for each villain sprite, do something
+	for(var i = 0; i<villainsprites.length; i++) {
+		//give a variable v to the current villain sprite
+    var v = villainsprites[i];
+    //moving all the villains
+    
+		//test if villains and octopus overlap, if so run villainbump function
+		octopus.overlap(v,villainbump);
   }
-	/*if(speedx>0){
-			villain.mirrorX(-1);
-		}else if (speedx<0){
-			villain.mirrorX(1);
-		}*/
-	if (villain.position.y >= sceneheight|| villain.position.y<=-height) { //reverse direction if goes out of bounds
-    speedy=speedy*-1; //reverse direction of speed variable
-  }
-	/*if (millis() > timer){
-     speedx = random(-1,5);
-     speedy = random(-1,5);
-     timer = timer + random(1000,3000);
-   }*/
 }
 
 function makebackgroundsprites(){
@@ -210,15 +193,26 @@ function eatshrimp(collector,collected){
 }
 
 function villainbump(){
+	//make a rectangle covering the screen, keep track of what the score was, set the score to zero
+	previouscount = count;
 	var w = scenewidth+width+width;
 	var h = sceneheight+height+height;
-	fill(255);
-	rect(0,0,w,h);
-	while(w>0){
-		w--;
-		h--;
-	}
+	fill(230,255,0);
+	rect(-width,-height,w,h);
 	count = 0;
+	spawnnewshrimp(previouscount);
+}
+
+function spawnnewshrimp(num){
+	for(i=0; i<num;i++){
+	//to make new shrimp when the score gets lowered from trash or villain
+	 var newshrimp = createSprite(random(0, scenewidth), random(0, sceneheight));
+
+  //assign an animation and add to shrimp group
+   newshrimp.addAnimation('normal','shrimp001.png','shrimp002.png','shrimp003.png');
+	 shrimpsprites.add(newshrimp);
+	 print("added "+num+" new shrimp");
+	}
 }
 
 function checkscore(){
