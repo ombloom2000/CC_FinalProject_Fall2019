@@ -5,6 +5,8 @@ var scenewidth;
 var sceneheight;
 var backgd;
 var oceansound;
+var chompsound;
+var villainsound;
 var soundmap;
 var shrimpsprites;
 var shrimp;
@@ -27,6 +29,8 @@ function preload(){
 	octoanimation = octopus.addAnimation('float','octopus001.png', 'octopus005.png'); 
 	//load sound to be manipulated
 	oceansound = loadSound('water.wav');
+	chompsound = loadSound('chomp.wav');
+	villainsound = loadSound('villain.wav');
 }
 
 //static
@@ -169,9 +173,12 @@ function movespeed(){
 
 function keepscore(){
 	//print the current score out of 20
+	noStroke();
 	fill(255);
 	textSize(20);
-	text(count+' / 20',octopus.position.x-25,octopus.position.y-60);
+	rect(octopus.position.x-400,octopus.position.y-370,60,30);
+	fill(0);
+	text(count+' / 20',octopus.position.x-395,octopus.position.y-350);
 }
 
 function movevillains(){
@@ -200,6 +207,7 @@ function movevillains(){
 function eatshrimp(collector,collected){
 	//increase score
 	count++;
+	chompsound.play();
 	//print(count+" ");
   //collected is the sprite in the group shrimpsprites that triggered the event
 	//delete the shrimp
@@ -209,6 +217,7 @@ function eatshrimp(collector,collected){
 function villainbump(){
 	//make a rectangle covering the screen, keep track of what the score was, set the score to zero
 	previouscount = count;
+	villainsound.play();
 	var w = scenewidth+width+width;
 	var h = sceneheight+height+height;
 	fill(230,255,0);
@@ -240,7 +249,7 @@ function checkscore(){
 		fill(255);
 		textSize(70);
 		textFont('Helvetica');
-		text('YOU WON', octopus.position.x, octopus.position.y);
+		text('YOU WON', octopus.position.x,ocotpus.position.y);
 	  }
 	}
 		//how to make that button actually restart the program
