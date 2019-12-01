@@ -28,9 +28,6 @@ var ydirection;
 var direction;
 var backmap;
 var previouscount;
-var time;
-var switchtime;
-var lastswitch;
 
 
 //preload to load animations
@@ -72,8 +69,6 @@ function setup(){
 	xdirection = 1; // Left or Right
   ydirection = 1; //up or down
 	direction = 90;
-	switchtime = 2000;
-	time = millis();
 }
 
 //active
@@ -135,6 +130,7 @@ function draw() {
 	movevillains();
 	movetrash();
 	constrainscore();
+	outoftime();
 	
 	//test if overlapping with shrimps prites, if so run eatshrimp function
 	octopus.overlap(shrimpsprites, eatshrimp);
@@ -291,7 +287,6 @@ function eatshrimp(collector,collected){
 	count++;
 	chompsound.amp(0.5);
 	chompsound.play();
-	//print(count+" ");
   //collected is the sprite in the group shrimpsprites that triggered the event
 	//delete the shrimp
   collected.remove();
@@ -312,13 +307,29 @@ function villainbump(){
 
 function spawnnewshrimp(num){
 	for(i=0; i<num;i++){
-	//to make new shrimp when the score gets lowered from trash or villain
+	//to make new shrimp when the score gets lowered from villain
 	 var newshrimp = createSprite(random(0, scenewidth), random(0, sceneheight));
 
   //assign an animation and add to shrimp group
    newshrimp.addAnimation('normal','shrimp001.png','shrimp002.png','shrimp003.png');
 	 shrimpsprites.add(newshrimp);
 	 print("added "+num+" new shrimp");
+	}
+}
+
+function outoftime(){
+	//keep time, lose if not done in time
+	fill(255);
+	rect(octopus.position.x-400,octopus.position.y-340,120,30);
+	fill(0)
+	text('Time: '+(round(millis()/1000)) +' /30',octopus.position.x-395,octopus.position.y-320);
+	if(millis()>=30000){
+		noLoop();
+		background(0,50,100);
+		fill(255);
+		textSize(70);
+		textFont('Helvetica');
+		text('YOU LOST', octopus.position.x,octopus.position.y);
 	}
 }
 
