@@ -28,6 +28,7 @@ var ydirection;
 var direction;
 var backmap;
 var previouscount;
+var sizemap;
 
 
 //preload to load animations
@@ -282,6 +283,9 @@ function movetrash(){
 }
 
 function eatshrimp(collector,collected){
+	//scale octopus according to how many shrimp eaten
+	sizemap = map(count,1,20,1,2);
+	octopus.scale = sizemap;
 	octopus.changeAnimation('float');
 	//increase score
 	count++;
@@ -302,6 +306,8 @@ function villainbump(){
 	fill(230,255,0);
 	rect(-width,-height,w,h);
 	count = 0;
+	//put back to original size
+	octopus.scale = 1;
 	spawnnewshrimp(previouscount);
 }
 
