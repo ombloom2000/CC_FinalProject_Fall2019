@@ -7,9 +7,15 @@ var backgd;
 var oceansound;
 var chompsound;
 var villainsound;
+var seagullsound;
+var bubblesound;
+var blehsound;
 var soundmap;
 var shrimpsprites;
 var shrimp;
+var trash;
+var trashsprites;
+var trashimg;
 var count;
 var button;
 var villain;
@@ -18,6 +24,7 @@ var xspeed;
 var yspeed;
 var xdirection;
 var ydirection;
+var direction;
 var backmap;
 var previouscount;
 
@@ -31,6 +38,10 @@ function preload(){
 	oceansound = loadSound('water.wav');
 	chompsound = loadSound('chomp.wav');
 	villainsound = loadSound('villain.wav');
+	seagullsound = loadSound('seagull.wav');
+	bubblesound = loadSound('bubbles.wav');
+	trashimg = loadImage('trash.png');
+	blehsound = loadSound('bleh.mp3');
 }
 
 //static
@@ -46,6 +57,7 @@ function setup(){
 	makebackgroundsprites();
 	makeshrimpsprites();
 	makevillainsprites();
+	maketrashsprites();
 	
 	//instantiate
 	count = 0;
@@ -53,18 +65,41 @@ function setup(){
 	yspeed = 2.2;
 	xdirection = 1; // Left or Right
   ydirection = 1; //up or down
+	direction = 90;
 }
 
 //active
 function draw() {
 	//update map variable of amplitude and octopus y position
-	soundmap = map(octopus.position.y,-20.5,3013.2,0.01,0.5);
+	soundmap = map(octopus.position.y,1496.36,3013.2,0.8,0.1);
+	
 	//update map variable of background color and octopus y position
 	backmap = map(octopus.position.y,-20.5,3013.2,130,80);
 	
 	//change amplitude and play sound depending on mapped y value
-	oceansound.amp(soundmap);
+	//if in top half, keep quiet, loud in middle, then map it to get quiet as you go deeper
+	//for seagulls, loud at top and silent by middle
+	if(octopus.position.y<1496.35){
+		var mapper = map(octopus.position.y,-20.5,1496.36,0.01,0.8);
+		var smapper = map(octopus.position.y,-20.5,1496.36,0.8,0.01);
+		oceansound.amp(mapper);
+		seagullsound.amp(smapper);
+	}else{
+		oceansound.amp(soundmap);
+		seagullsound.amp(0);
+	}
+	seagullsound.playMode('untilDone');
+	seagullsound.play();
+	oceansound.playMode('untilDone');
 	oceansound.play();
+	
+	
+//play bubbles randomly
+	var ready = random(0,200);
+	if(ready<0.5){
+		bubblesound.playMode('untilDone');
+		bubblesound.play();
+	}
 	
 	//clear background and change darkness with "depth"
 	background(0,30,backmap);
@@ -81,12 +116,17 @@ function draw() {
 	//make villain sprites w/animation
 	drawSprites(villainsprites);
 	
+	//make trash sprites
+	drawSprites(trashsprites);
+	
 	//call functions
 	cameraposition();
 	stayinsketch();
 	movespeed();
 	keepscore();
 	movevillains();
+	movetrash();
+	constrainscore();
 	
 	//test if overlapping with shrimps prites, if so run eatshrimp function
 	octopus.overlap(shrimpsprites, eatshrimp);
@@ -96,6 +136,19 @@ function draw() {
 }
 
 //custom functions
+function trashreact(){
+		//count -=1;
+	  //spawnnewshrimp(1);
+	  blehsound.playMode('untilDone');
+	  blehsound.play();
+}
+
+function constrainscore(){
+	if(count <=0){
+		count = 0;
+	}
+}
+
 function makebackgroundsprites(){
 	//instantiation of group of sprites through Group class, a type of extended array
 	backgd = new Group();
@@ -109,6 +162,16 @@ function makebackgroundsprites(){
 		stone.addAnimation('normal', 'stone'+i%3+'.png');
     backgd.add(stone);
   }
+}
+
+function maketrashsprites(){
+	trashsprites = new Group();
+	
+	for(i=0;i<20;i++){
+		trash = createSprite(random(0, scenewidth), random(0, sceneheight));
+		trash.addImage(trashimg);
+		trashsprites.add(trash);
+	}
 }
 
 function makeshrimpsprites(){
@@ -176,7 +239,7 @@ function keepscore(){
 	noStroke();
 	fill(255);
 	textSize(20);
-	rect(octopus.position.x-400,octopus.position.y-370,60,30);
+	rect(octopus.position.x-400,octopus.position.y-370,70,30);
 	fill(0);
 	text(count+' / 20',octopus.position.x-395,octopus.position.y-350);
 }
@@ -204,9 +267,19 @@ function movevillains(){
   }
 }
 
+function movetrash(){
+	for(i=0;i<trashsprites.length;i++){
+		var t = trashsprites[i];
+		t.setSpeed(3, direction);
+	  octopus.overlap(t,trashreact);
+	}
+	direction += 8;
+}
+
 function eatshrimp(collector,collected){
 	//increase score
 	count++;
+	chompsound.amp(0.5);
 	chompsound.play();
 	//print(count+" ");
   //collected is the sprite in the group shrimpsprites that triggered the event
@@ -217,6 +290,7 @@ function eatshrimp(collector,collected){
 function villainbump(){
 	//make a rectangle covering the screen, keep track of what the score was, set the score to zero
 	previouscount = count;
+	villainsound.amp(0.2);
 	villainsound.play();
 	var w = scenewidth+width+width;
 	var h = sceneheight+height+height;
