@@ -1,6 +1,7 @@
 //declaring variables
 var octopus;
 var octoanimation;
+var sickanimation;
 var scenewidth;
 var sceneheight;
 var backgd;
@@ -27,13 +28,18 @@ var ydirection;
 var direction;
 var backmap;
 var previouscount;
+var time;
+var switchtime;
+var lastswitch;
+
 
 //preload to load animations
 function preload(){
 	//create sprite at given location, width and height
 	octopus = createSprite(350,350,50,100);
 	//create an animation for octopus from img 001 to 005
-	octoanimation = octopus.addAnimation('float','octopus001.png', 'octopus005.png'); 
+	octoanimation = octopus.addAnimation('float','octopus001.png', 'octopus005.png');
+	sickanimation = octopus.addAnimation('sick','sick001.png','sick005.png');
 	//load sound to be manipulated
 	oceansound = loadSound('water.wav');
 	chompsound = loadSound('chomp.wav');
@@ -66,6 +72,8 @@ function setup(){
 	xdirection = 1; // Left or Right
   ydirection = 1; //up or down
 	direction = 90;
+	switchtime = 2000;
+	time = millis();
 }
 
 //active
@@ -137,8 +145,9 @@ function draw() {
 
 //custom functions
 function trashreact(){
-		//count -=1;
-	  //spawnnewshrimp(1);
+	  //change animation of octopus to be the sick/ink animation
+	  //make sick sound
+		octopus.changeAnimation('sick');
 	  blehsound.playMode('untilDone');
 	  blehsound.play();
 }
@@ -167,7 +176,7 @@ function makebackgroundsprites(){
 function maketrashsprites(){
 	trashsprites = new Group();
 	
-	for(i=0;i<20;i++){
+	for(i=0;i<15;i++){
 		trash = createSprite(random(0, scenewidth), random(0, sceneheight));
 		trash.addImage(trashimg);
 		trashsprites.add(trash);
@@ -277,6 +286,7 @@ function movetrash(){
 }
 
 function eatshrimp(collector,collected){
+	octopus.changeAnimation('float');
 	//increase score
 	count++;
 	chompsound.amp(0.5);
