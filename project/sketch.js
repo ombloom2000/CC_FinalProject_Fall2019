@@ -29,6 +29,10 @@ var direction;
 var backmap;
 var previouscount;
 var sizemap;
+var level;
+//var obstacle;
+//var obstacleimg;
+//var obstacles;
 
 
 //preload to load animations
@@ -46,9 +50,10 @@ function preload(){
 	bubblesound = loadSound('bubbles.wav');
 	trashimg = loadImage('trash.png');
 	blehsound = loadSound('bleh.mp3');
+	//obstacleimg = loadImage('obstacle.png');
 }
 
-//static
+//STATIC
 function setup(){
 	//create canvas
   createCanvas(900,900); 
@@ -70,9 +75,10 @@ function setup(){
 	xdirection = 1; // Left or Right
   ydirection = 1; //up or down
 	direction = 90;
+	level = 1;
 }
 
-//active
+//ACTIVE
 function draw() {
 	//update map variable of amplitude and octopus y position
 	soundmap = map(octopus.position.y,1496.36,3013.2,0.8,0.1);
@@ -132,15 +138,20 @@ function draw() {
 	movetrash();
 	constrainscore();
 	outoftime();
+  //obstacless();
 	
 	//test if overlapping with shrimps prites, if so run eatshrimp function
 	octopus.overlap(shrimpsprites, eatshrimp);
 	
 	//check to see if the score is 20/20
 	checkscore();
+	
+/*	if(level==2){
+		setupcode();
+	}*/
 }
 
-//custom functions
+//CUSTOM FUNCTIONS
 function trashreact(){
 	  //change animation of octopus to be the sick/ink animation
 	  //make sick sound
@@ -150,6 +161,7 @@ function trashreact(){
 }
 
 function constrainscore(){
+	//keep score within 0 to 20
 	if(count <=0){
 		count = 0;
 	}
@@ -170,7 +182,15 @@ function makebackgroundsprites(){
   }
 }
 
+/*function obstacless(){
+	for(i=0;i<obstacles.length;i++){
+		var s = obstacles[i];
+		octopus.collide(s);
+	}
+}*/
+
 function maketrashsprites(){
+	//create sprites, add image, add to Group class
 	trashsprites = new Group();
 	
 	for(i=0;i<15;i++){
@@ -179,6 +199,15 @@ function maketrashsprites(){
 		trashsprites.add(trash);
 	}
 }
+
+/*function makeobstaclesprites(){
+	obstacles= new Group();
+	for(i = 0; i<10;i++){
+		obstacle = createSprite(random(0, scenewidth), random(0, sceneheight));
+		obstacle.addImage(obstacleimg);
+		obstacles.add(obstacle);
+	}
+}*/
 
 function makeshrimpsprites(){
 	//instantiation of group of sprites through Group class, a type of extended array
@@ -274,6 +303,7 @@ function movevillains(){
 }
 
 function movetrash(){
+	//move each trash sprite in a circular motion
 	for(i=0;i<trashsprites.length;i++){
 		var t = trashsprites[i];
 		t.setSpeed(3, direction);
@@ -328,8 +358,8 @@ function outoftime(){
 	fill(255);
 	rect(octopus.position.x-400,octopus.position.y-340,120,30);
 	fill(0)
-	text('Time: '+(round(millis()/1000)) +' /30',octopus.position.x-395,octopus.position.y-320);
-	if(millis()>=30000){
+	text('Time: '+(round(millis()/1000)) +' /60',octopus.position.x-395,octopus.position.y-320);
+	if(millis()>=60000){
 		noLoop();
 		background(0,50,100);
 		fill(255);
@@ -341,28 +371,27 @@ function outoftime(){
 
 function checkscore(){
 	//if score is 20/20, tell the player they've won
-	//stops loop of program
-	//play again on a button with a double click
-	if(count == 20){
+	//go to level 2
+	if(count == 20 && (level == 1)){
+		level = 2;
+	}else if(count == 20 && (level == 2)){
 		noLoop();
 		oceansound.amp(0.0);
 		background(0,50,100);
 		fill(255);
-		textSize(70);
+		textSize(200);
 		textFont('Helvetica');
 		text('YOU WON', octopus.position.x,ocotpus.position.y);
-	  }
-	}
-		//how to make that button actually restart the program
-		/*button = createButton('PLAY AGAIN?');
-    button.position(width/2-50,height/2+75);
-		button.mousePressed(buttonClicked);
 	}
 }
 
-function buttonClicked(){
-	//checks for the button being clicked, which sets the count back to zero, removes the button, and resumes the draw loop
-		loop();
-		//count=0;
-		//removeElements(button);
+/*function setupcode(){
+	//call functions
+	makeshrimpsprites();
+	makeobstaclesprites();
+	drawSprites(obstacles);
+	obstacless();
+	//instantiate
+	count = 0;
+	octopus.scale = 1;
 }*/
