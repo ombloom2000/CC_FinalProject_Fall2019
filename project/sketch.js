@@ -16,6 +16,8 @@ var shrimpsprites;
 var shrimp;
 var shrimpsprites2;
 var shrimp2;
+var shrimpx;
+var shrimpy;
 var trash;
 var trashsprites;
 var trashimg;
@@ -85,145 +87,148 @@ function setup(){
 function draw() {
 	
 	switch(level){
+		//if level 1
 		case 1:
-				//update map variable of amplitude and octopus y position
-	soundmap = map(octopus.position.y,1496.36,3013.2,0.8,0.1);
+		//update map variable of amplitude and octopus y position
+	  soundmap = map(octopus.position.y,1496.36,3013.2,0.8,0.1);
 	
-	//update map variable of background color and octopus y position
-	backmap = map(octopus.position.y,-20.5,3013.2,130,80);
+	  //update map variable of background color and octopus y position
+	  backmap = map(octopus.position.y,-20.5,3013.2,130,80);
 	
-	//change amplitude and play sound depending on mapped y value
-	//if in top half, keep quiet, loud in middle, then map it to get quiet as you go deeper
-	//for seagulls, loud at top and silent by middle
-	if(octopus.position.y<1496.35){
-		var mapper = map(octopus.position.y,-20.5,1496.36,0.01,0.8);
-		var smapper = map(octopus.position.y,-20.5,1496.36,0.8,0.01);
-		oceansound.amp(mapper);
-		seagullsound.amp(smapper);
-	}else{
-		oceansound.amp(soundmap);
-		seagullsound.amp(0);
-	}
-	seagullsound.playMode('untilDone');
-	seagullsound.play();
-	oceansound.playMode('untilDone');
-	oceansound.play();
+	  //change amplitude and play sound depending on mapped y value
+	  //if in top half, keep quiet, loud in middle, then map it to get quiet as you go deeper
+	  //for seagulls, loud at top and silent by middle
+	  if(octopus.position.y<1496.35){
+		  var mapper = map(octopus.position.y,-20.5,1496.36,0.01,0.8);
+		  var smapper = map(octopus.position.y,-20.5,1496.36,0.8,0.01);
+		  oceansound.amp(mapper);
+	  	seagullsound.amp(smapper);
+	  }else{
+		  oceansound.amp(soundmap);
+		  seagullsound.amp(0);
+	  }
+	  seagullsound.playMode('untilDone');
+	  seagullsound.play();
+	  oceansound.playMode('untilDone');
+	  oceansound.play();
 	
 	
-//play bubbles randomly
-	var ready = random(0,200);
-	if(ready<0.5){
-		bubblesound.playMode('untilDone');
-		bubblesound.play();
-	}
+    //play bubbles randomly
+	  var ready = random(0,200);
+	  if(ready<0.5){
+		  bubblesound.playMode('untilDone');
+		  bubblesound.play();
+	  }
 	
-	//clear background and change darkness with "depth"
-	background(0,30,backmap);
+	  //clear background and change darkness with "depth"
+	  background(0,30,backmap);
 	
-	//make background w/stones
-	drawSprites(backgd);
+	  //make background w/stones
+	  drawSprites(backgd);
 	
-	//draw octopus sprite w/ animation
-	drawSprite(octopus);
+	  //draw octopus sprite w/ animation
+	  drawSprite(octopus);
 	
-	//make shrimp sprites w/animation
-	drawSprites(shrimpsprites);
+	  //make shrimp sprites w/animation
+	  drawSprites(shrimpsprites);
 	
-	//make villain sprites w/animation
-	//drawSprites(villainsprites);
+	  //make villain sprites w/animation
+	  drawSprites(villainsprites);
 	
-	//make trash sprites
-	drawSprites(trashsprites);
+	  //make trash sprites
+	  drawSprites(trashsprites);
 	
-	//call functions
-	cameraposition();
-	stayinsketch();
-	movespeed();
-	keepscore();
-	//movevillains();
-	movetrash();
-	outoftime();
+	  //call functions
+	  cameraposition();
+	  stayinsketch();
+	  movespeed();
+	  keepscore();
+	  movevillains();
+	  movetrash();
+	  outoftime();
 	
-	//test if overlapping with shrimps prites, if so run eatshrimp function
-	octopus.overlap(shrimpsprites, eatshrimp);
+	  //test if overlapping with shrimps prites, if so run eatshrimp function
+	  octopus.overlap(shrimpsprites, eatshrimp);
 	
-	//check to see if the score is 20/20
-	checkscore();
-			break;
-			
+	  //check to see if the score is 20/20
+	  checkscore();
+		break;
+		
+		//if level 2
 		case 2:
-     if((millis()>level2time) &&(millis()<level2time+100)){
-			 makeshrimpsprites();
-			 count = 0;
+    if((millis()>level2time) &&(millis()<level2time+100)){
+			makeshrimpsprites();
+			count = 0;
 		}
-			octopus.scale = 1;
-				//update map variable of amplitude and octopus y position
-	soundmap = map(octopus.position.y,1496.36,3013.2,0.8,0.1);
+		octopus.scale = 1;
+		//update map variable of amplitude and octopus y position
+	  soundmap = map(octopus.position.y,1496.36,3013.2,0.8,0.1);
 	
-	//update map variable of background color and octopus y position
-	backmap = map(octopus.position.y,-20.5,3013.2,130,80);
+	  //update map variable of background color and octopus y position
+	  backmap = map(octopus.position.y,-20.5,3013.2,130,80);
 	
-	//change amplitude and play sound depending on mapped y value
-	//if in top half, keep quiet, loud in middle, then map it to get quiet as you go deeper
-	//for seagulls, loud at top and silent by middle
-	if(octopus.position.y<1496.35){
-		var mapper2 = map(octopus.position.y,-20.5,1496.36,0.01,0.8);
-		var smapper2 = map(octopus.position.y,-20.5,1496.36,0.8,0.01);
-		oceansound.amp(mapper2);
-		seagullsound.amp(smapper2);
-	}else{
-		oceansound.amp(soundmap);
-		seagullsound.amp(0);
-	}
-	seagullsound.playMode('untilDone');
-	seagullsound.play();
-	oceansound.playMode('untilDone');
-	oceansound.play();
+	  //change amplitude and play sound depending on mapped y value
+	  //if in top half, keep quiet, loud in middle, then map it to get quiet as you go deeper
+	  //for seagulls, loud at top and silent by middle
+	  if(octopus.position.y<1496.35){
+		  var mapper2 = map(octopus.position.y,-20.5,1496.36,0.01,0.8);
+		  var smapper2 = map(octopus.position.y,-20.5,1496.36,0.8,0.01);
+		  oceansound.amp(mapper2);
+		  seagullsound.amp(smapper2);
+	  }else{
+		  oceansound.amp(soundmap);
+		  seagullsound.amp(0);
+	  }
+	  seagullsound.playMode('untilDone');
+	  seagullsound.play();
+	  oceansound.playMode('untilDone');
+	  oceansound.play();
 	
 	
-//play bubbles randomly
-	var ready2 = random(0,200);
-	if(ready2<0.5){
-		bubblesound.playMode('untilDone');
-		bubblesound.play();
-	}
+    //play bubbles randomly
+	  var ready2 = random(0,200);
+	  if(ready2<0.5){
+		  bubblesound.playMode('untilDone');
+		  bubblesound.play();
+	  }
 	
-	//clear background and change darkness with "depth"
-	background(0,30,backmap);
+	  //clear background and change darkness with "depth"
+	  background(0,30,backmap);
 	
-	//make background w/stones
-	drawSprites(backgd);
+	  //make background w/stones
+	  drawSprites(backgd);
 	
-	//draw octopus sprite w/ animation
-	drawSprite(octopus);
+	  //draw octopus sprite w/ animation
+	  drawSprite(octopus);
 	
-	//make shrimp sprites w/animation
-	drawSprites(shrimpsprites);
+	  //make shrimp sprites w/animation
+	  drawSprites(shrimpsprites);
 	
-	//make villain sprites w/animation
-	//drawSprites(villainsprites);
+	  //make villain sprites w/animation
+	  drawSprites(villainsprites);
 	
-	//make trash sprites
-	drawSprites(trashsprites);
-			
-	drawSprites(obstacles);
-	octopus.collide(obstacles);
+	  //make trash sprites
+	  drawSprites(trashsprites);
+		
+		//make obstacles and make them collision-prone
+	  drawSprites(obstacles);
+	  octopus.collide(obstacles);
 	
-	//call functions
-	cameraposition();
-	stayinsketch();
-	movespeed();
-	keepscore();
-	//movevillains();
-	movetrash();
-	outoftime();
+	  //call functions
+	  cameraposition();
+	  stayinsketch();
+	  movespeed();
+	  keepscore();
+	  movevillains();
+	  movetrash();
+	  outoftime();
 	
-	//test if overlapping with shrimps sprites, if so run eatshrimp function
-	octopus.overlap(shrimpsprites, eatshrimp);
+	  //test if overlapping with shrimps sprites, if so run eatshrimp function
+	  octopus.overlap(shrimpsprites, eatshrimp);
 	
-	//check to see if the score is 20/20
-	checkscore();
-			break;
+	  //check to see if the score is 20/20
+    checkscore();
+		break;
 	}
 }
 
@@ -262,7 +267,9 @@ function makeshrimpsprites(){
 	//create shrimp
 	for(var i=0; i<20;i++){
 		//create shrimp sprite and animate it, put at a random location in the sketch
-		shrimp = createSprite(random(0, scenewidth), random(0, sceneheight));
+		shrimpx = random(0, scenewidth);
+		shrimpy = random(0, sceneheight);
+		shrimp = createSprite(shrimpx,shrimpy);
 		
 		//animates and adds to Group
 		shrimp.addAnimation('normal','shrimp001.png','shrimp002.png','shrimp003.png');
@@ -289,7 +296,14 @@ function makevillainsprites(){
 function makeobstaclesprites(){
 	obstacles= new Group();
 	for(i = 0; i<12;i++){
-		obstacle = createSprite(random(0, scenewidth), random(0, sceneheight));
+		var x = random(0, scenewidth);
+		var y = random(0, sceneheight);
+		//if the random val is at the position of a shrimp, get a different value so they don't overlap
+		while((((x+20==shrimpx)||(x-20 == shrimpx))&&((y+20==shrimpy)||(y-20 == shrimpy)))){
+			x = random(0, scenewidth);
+		  y = random(0, sceneheight);
+		}
+		obstacle = createSprite(x,y);
 		obstacle.addImage(obstacleimg);
 		obstacles.add(obstacle);
 	}
@@ -470,7 +484,7 @@ function checkscore(){
 		oceansound.amp(0.0);
 		background(0,50,100);
 		fill(255);
-		textSize(200);
+		textSize(70);
 		textFont('Helvetica');
 		text('YOU WON', octopus.position.x,octopus.position.y);
 			}
