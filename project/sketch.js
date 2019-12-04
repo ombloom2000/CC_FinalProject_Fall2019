@@ -35,6 +35,7 @@ var level;
 var obstacle;
 var obstacleimg;
 var obstacles;
+var level2time;
 
 
 //preload to load animations
@@ -65,19 +66,19 @@ function setup(){
 	sceneheight = 3000;
 	level = 1;
 	//call functions
-	    makebackgroundsprites();
-	    makeshrimpsprites();
-	    makevillainsprites();
-	    maketrashsprites();
-	    makeobstaclesprites();
+	makebackgroundsprites();
+	makeshrimpsprites();
+	makevillainsprites();
+	maketrashsprites();
+	makeobstaclesprites();
 	
-	    //instantiate
-	    count = 0;
-	    xspeed = 2.8;
-	    yspeed = 2.2;
-	    xdirection = 1; // Left or Right
-      ydirection = 1; //up or down
-	    direction = 90;
+	//instantiate
+	count = 0;
+	xspeed = 2.8;
+	yspeed = 2.2;
+	xdirection = 1; // Left or Right
+  ydirection = 1; //up or down
+	direction = 90;
 }
 
 //ACTIVE
@@ -141,7 +142,6 @@ function draw() {
 	keepscore();
 	//movevillains();
 	movetrash();
-	constrainscore();
 	outoftime();
 	
 	//test if overlapping with shrimps prites, if so run eatshrimp function
@@ -152,8 +152,11 @@ function draw() {
 			break;
 			
 		case 2:
+     if((millis()>level2time) &&(millis()<level2time+100)){
+			 makeshrimpsprites();
+			 count = 0;
+		}
 			octopus.scale = 1;
-			count = 0;
 				//update map variable of amplitude and octopus y position
 	soundmap = map(octopus.position.y,1496.36,3013.2,0.8,0.1);
 	
@@ -196,10 +199,9 @@ function draw() {
 	
 	//make shrimp sprites w/animation
 	drawSprites(shrimpsprites);
-			//print('made shrimp for level two');
 	
 	//make villain sprites w/animation
-	drawSprites(villainsprites);
+	//drawSprites(villainsprites);
 	
 	//make trash sprites
 	drawSprites(trashsprites);
@@ -212,9 +214,8 @@ function draw() {
 	stayinsketch();
 	movespeed();
 	keepscore();
-	movevillains();
+	//movevillains();
 	movetrash();
-	constrainscore();
 	outoftime();
 	
 	//test if overlapping with shrimps sprites, if so run eatshrimp function
@@ -287,7 +288,7 @@ function makevillainsprites(){
 
 function makeobstaclesprites(){
 	obstacles= new Group();
-	for(i = 0; i<10;i++){
+	for(i = 0; i<12;i++){
 		obstacle = createSprite(random(0, scenewidth), random(0, sceneheight));
 		obstacle.addImage(obstacleimg);
 		obstacles.add(obstacle);
@@ -418,7 +419,7 @@ function keepscore(){
 function outoftime(){
 	//keep time, lose if not done in time
 	fill(255);
-	rect(octopus.position.x-400,octopus.position.y-340,130,30);
+	rect(octopus.position.x-400,octopus.position.y-340,140,30);
 	fill(0);
 	var currenttime = round(millis()/1000);
 	if(level == 1){
@@ -432,6 +433,10 @@ function outoftime(){
 		text('YOU LOST', octopus.position.x,octopus.position.y);
 	}
 	}else if(level == 2){
+		fill(255);
+	  rect(octopus.position.x-400,octopus.position.y-310,130,30);
+		fill(0);
+	  text('Level 2', octopus.position.x-395,octopus.position.y-290);
 		text('Time: '+currenttime +' /120',octopus.position.x-395,octopus.position.y-320);
 		if(millis()>=120000){
 		noLoop();
@@ -447,22 +452,28 @@ function outoftime(){
 function checkscore(){
 	//if score is 20/20, tell the player they've won
 	//go to level 2
-	if(count == 20 && (level == 1)){
+	switch(level){
+		case 1:
+			if(count == 20){
+		//take a timestamp for going into level 2
+		level2time = millis();
 		level = 2;
-	}/*else if(count == 20 && (level == 2)){
-		noLoop();
+		var w = scenewidth+width+width;
+	  var h = sceneheight+height+height;
+	  fill(255);
+	  rect(-width,-height,w,h);
+			}
+			break;
+		case 2:
+			if(count ==20){
+				noLoop();
 		oceansound.amp(0.0);
 		background(0,50,100);
 		fill(255);
 		textSize(200);
 		textFont('Helvetica');
 		text('YOU WON', octopus.position.x,octopus.position.y);
-	}*/
-}
-
-function constrainscore(){
-	//keep score within 0 to 20
-	if(count <=0){
-		count = 0;
+			}
+			break;
 	}
 }
