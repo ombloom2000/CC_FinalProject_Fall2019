@@ -14,6 +14,8 @@ var blehsound;
 var soundmap;
 var shrimpsprites;
 var shrimp;
+var shrimpsprites2;
+var shrimp2;
 var trash;
 var trashsprites;
 var trashimg;
@@ -30,9 +32,9 @@ var backmap;
 var previouscount;
 var sizemap;
 var level;
-//var obstacle;
-//var obstacleimg;
-//var obstacles;
+var obstacle;
+var obstacleimg;
+var obstacles;
 
 
 //preload to load animations
@@ -50,7 +52,7 @@ function preload(){
 	bubblesound = loadSound('bubbles.wav');
 	trashimg = loadImage('trash.png');
 	blehsound = loadSound('bleh.mp3');
-	//obstacleimg = loadImage('obstacle.png');
+	obstacleimg = loadImage('obstacle.png');
 }
 
 //STATIC
@@ -61,26 +63,29 @@ function setup(){
 	//instantiation of variables
 	scenewidth = 3000; 
 	sceneheight = 3000;
-	
-	//call functions
-	makebackgroundsprites();
-	makeshrimpsprites();
-	makevillainsprites();
-	maketrashsprites();
-	
-	//instantiate
-	count = 0;
-	xspeed = 2.8;
-	yspeed = 2.2;
-	xdirection = 1; // Left or Right
-  ydirection = 1; //up or down
-	direction = 90;
 	level = 1;
+	//call functions
+	    makebackgroundsprites();
+	    makeshrimpsprites();
+	    makevillainsprites();
+	    maketrashsprites();
+	    makeobstaclesprites();
+	
+	    //instantiate
+	    count = 0;
+	    xspeed = 2.8;
+	    yspeed = 2.2;
+	    xdirection = 1; // Left or Right
+      ydirection = 1; //up or down
+	    direction = 90;
 }
 
 //ACTIVE
 function draw() {
-	//update map variable of amplitude and octopus y position
+	
+	switch(level){
+		case 1:
+				//update map variable of amplitude and octopus y position
 	soundmap = map(octopus.position.y,1496.36,3013.2,0.8,0.1);
 	
 	//update map variable of background color and octopus y position
@@ -124,10 +129,83 @@ function draw() {
 	drawSprites(shrimpsprites);
 	
 	//make villain sprites w/animation
+	//drawSprites(villainsprites);
+	
+	//make trash sprites
+	drawSprites(trashsprites);
+	
+	//call functions
+	cameraposition();
+	stayinsketch();
+	movespeed();
+	keepscore();
+	//movevillains();
+	movetrash();
+	constrainscore();
+	outoftime();
+	
+	//test if overlapping with shrimps prites, if so run eatshrimp function
+	octopus.overlap(shrimpsprites, eatshrimp);
+	
+	//check to see if the score is 20/20
+	checkscore();
+			break;
+			
+		case 2:
+			octopus.scale = 1;
+			count = 0;
+				//update map variable of amplitude and octopus y position
+	soundmap = map(octopus.position.y,1496.36,3013.2,0.8,0.1);
+	
+	//update map variable of background color and octopus y position
+	backmap = map(octopus.position.y,-20.5,3013.2,130,80);
+	
+	//change amplitude and play sound depending on mapped y value
+	//if in top half, keep quiet, loud in middle, then map it to get quiet as you go deeper
+	//for seagulls, loud at top and silent by middle
+	if(octopus.position.y<1496.35){
+		var mapper2 = map(octopus.position.y,-20.5,1496.36,0.01,0.8);
+		var smapper2 = map(octopus.position.y,-20.5,1496.36,0.8,0.01);
+		oceansound.amp(mapper2);
+		seagullsound.amp(smapper2);
+	}else{
+		oceansound.amp(soundmap);
+		seagullsound.amp(0);
+	}
+	seagullsound.playMode('untilDone');
+	seagullsound.play();
+	oceansound.playMode('untilDone');
+	oceansound.play();
+	
+	
+//play bubbles randomly
+	var ready2 = random(0,200);
+	if(ready2<0.5){
+		bubblesound.playMode('untilDone');
+		bubblesound.play();
+	}
+	
+	//clear background and change darkness with "depth"
+	background(0,30,backmap);
+	
+	//make background w/stones
+	drawSprites(backgd);
+	
+	//draw octopus sprite w/ animation
+	drawSprite(octopus);
+	
+	//make shrimp sprites w/animation
+	drawSprites(shrimpsprites);
+			//print('made shrimp for level two');
+	
+	//make villain sprites w/animation
 	drawSprites(villainsprites);
 	
 	//make trash sprites
 	drawSprites(trashsprites);
+			
+	drawSprites(obstacles);
+	octopus.collide(obstacles);
 	
 	//call functions
 	cameraposition();
@@ -138,34 +216,17 @@ function draw() {
 	movetrash();
 	constrainscore();
 	outoftime();
-  //obstacless();
 	
-	//test if overlapping with shrimps prites, if so run eatshrimp function
+	//test if overlapping with shrimps sprites, if so run eatshrimp function
 	octopus.overlap(shrimpsprites, eatshrimp);
 	
 	//check to see if the score is 20/20
 	checkscore();
-	
-/*	if(level==2){
-		setupcode();
-	}*/
+			break;
+	}
 }
 
 //CUSTOM FUNCTIONS
-function trashreact(){
-	  //change animation of octopus to be the sick/ink animation
-	  //make sick sound
-		octopus.changeAnimation('sick');
-	  blehsound.playMode('untilDone');
-	  blehsound.play();
-}
-
-function constrainscore(){
-	//keep score within 0 to 20
-	if(count <=0){
-		count = 0;
-	}
-}
 
 function makebackgroundsprites(){
 	//instantiation of group of sprites through Group class, a type of extended array
@@ -182,13 +243,6 @@ function makebackgroundsprites(){
   }
 }
 
-/*function obstacless(){
-	for(i=0;i<obstacles.length;i++){
-		var s = obstacles[i];
-		octopus.collide(s);
-	}
-}*/
-
 function maketrashsprites(){
 	//create sprites, add image, add to Group class
 	trashsprites = new Group();
@@ -199,15 +253,6 @@ function maketrashsprites(){
 		trashsprites.add(trash);
 	}
 }
-
-/*function makeobstaclesprites(){
-	obstacles= new Group();
-	for(i = 0; i<10;i++){
-		obstacle = createSprite(random(0, scenewidth), random(0, sceneheight));
-		obstacle.addImage(obstacleimg);
-		obstacles.add(obstacle);
-	}
-}*/
 
 function makeshrimpsprites(){
 	//instantiation of group of sprites through Group class, a type of extended array
@@ -240,43 +285,13 @@ function makevillainsprites(){
 	}
 }
 
-	function cameraposition(){
-	//set the camera position to the octopus position so the camera keeps the octopus in frame
-  camera.position.x =octopus.position.x;
-  camera.position.y =octopus.position.y;
-}
-
-function stayinsketch(){
-	//limit the octopus movements to stay within sketch
-  if(octopus.position.x < 0){
-    octopus.position.x = 0;
+function makeobstaclesprites(){
+	obstacles= new Group();
+	for(i = 0; i<10;i++){
+		obstacle = createSprite(random(0, scenewidth), random(0, sceneheight));
+		obstacle.addImage(obstacleimg);
+		obstacles.add(obstacle);
 	}
-  if(octopus.position.y < 0){
-    octopus.position.y = 0;
-	}
-  if(octopus.position.x > scenewidth){
-    octopus.position.x = scenewidth;
-	}
-  if(octopus.position.y > sceneheight){
-    octopus.position.y = sceneheight;
-	}
-}
-
-function movespeed(){
-	//virtual camera movement is effected by the mouse
-	//speed is inversely proportional to the mouse distance, further mouse gets, faster the scene moves
-  octopus.velocity.x = (camera.mouseX-octopus.position.x)/20;
-  octopus.velocity.y = (camera.mouseY-octopus.position.y)/20;
-}
-
-function keepscore(){
-	//print the current score out of 20
-	noStroke();
-	fill(255);
-	textSize(20);
-	rect(octopus.position.x-400,octopus.position.y-370,70,30);
-	fill(0);
-	text(count+' / 20',octopus.position.x-395,octopus.position.y-350);
 }
 
 function movevillains(){
@@ -341,6 +356,14 @@ function villainbump(){
 	spawnnewshrimp(previouscount);
 }
 
+function trashreact(){
+	  //change animation of octopus to be the sick/ink animation
+	  //make sick sound
+		octopus.changeAnimation('sick');
+	  blehsound.playMode('untilDone');
+	  blehsound.play();
+}
+
 function spawnnewshrimp(num){
 	for(i=0; i<num;i++){
 	//to make new shrimp when the score gets lowered from villain
@@ -353,19 +376,71 @@ function spawnnewshrimp(num){
 	}
 }
 
+	function cameraposition(){
+	//set the camera position to the octopus position so the camera keeps the octopus in frame
+  camera.position.x =octopus.position.x;
+  camera.position.y =octopus.position.y;
+}
+
+function stayinsketch(){
+	//limit the octopus movements to stay within sketch
+  if(octopus.position.x < 0){
+    octopus.position.x = 0;
+	}
+  if(octopus.position.y < 0){
+    octopus.position.y = 0;
+	}
+  if(octopus.position.x > scenewidth){
+    octopus.position.x = scenewidth;
+	}
+  if(octopus.position.y > sceneheight){
+    octopus.position.y = sceneheight;
+	}
+}
+
+function movespeed(){
+	//virtual camera movement is effected by the mouse
+	//speed is inversely proportional to the mouse distance, further mouse gets, faster the scene moves
+  octopus.velocity.x = (camera.mouseX-octopus.position.x)/20;
+  octopus.velocity.y = (camera.mouseY-octopus.position.y)/20;
+}
+
+function keepscore(){
+	//print the current score out of 20
+	noStroke();
+	fill(255);
+	textSize(20);
+	rect(octopus.position.x-400,octopus.position.y-370,80,30);
+	fill(0);
+	text(count+' / 20',octopus.position.x-395,octopus.position.y-350);
+}
+
 function outoftime(){
 	//keep time, lose if not done in time
 	fill(255);
-	rect(octopus.position.x-400,octopus.position.y-340,120,30);
-	fill(0)
-	text('Time: '+(round(millis()/1000)) +' /60',octopus.position.x-395,octopus.position.y-320);
-	if(millis()>=60000){
+	rect(octopus.position.x-400,octopus.position.y-340,130,30);
+	fill(0);
+	var currenttime = round(millis()/1000);
+	if(level == 1){
+	text('Time: '+currenttime + ' /60',octopus.position.x-395,octopus.position.y-320);
+		if(millis()>=60000){
 		noLoop();
 		background(0,50,100);
 		fill(255);
 		textSize(70);
 		textFont('Helvetica');
 		text('YOU LOST', octopus.position.x,octopus.position.y);
+	}
+	}else if(level == 2){
+		text('Time: '+currenttime +' /120',octopus.position.x-395,octopus.position.y-320);
+		if(millis()>=120000){
+		noLoop();
+		background(0,50,100);
+		fill(255);
+		textSize(70);
+		textFont('Helvetica');
+		text('YOU LOST', octopus.position.x,octopus.position.y);
+	}
 	}
 }
 
@@ -374,24 +449,20 @@ function checkscore(){
 	//go to level 2
 	if(count == 20 && (level == 1)){
 		level = 2;
-	}else if(count == 20 && (level == 2)){
+	}/*else if(count == 20 && (level == 2)){
 		noLoop();
 		oceansound.amp(0.0);
 		background(0,50,100);
 		fill(255);
 		textSize(200);
 		textFont('Helvetica');
-		text('YOU WON', octopus.position.x,ocotpus.position.y);
-	}
+		text('YOU WON', octopus.position.x,octopus.position.y);
+	}*/
 }
 
-/*function setupcode(){
-	//call functions
-	makeshrimpsprites();
-	makeobstaclesprites();
-	drawSprites(obstacles);
-	obstacless();
-	//instantiate
-	count = 0;
-	octopus.scale = 1;
-}*/
+function constrainscore(){
+	//keep score within 0 to 20
+	if(count <=0){
+		count = 0;
+	}
+}
