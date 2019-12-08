@@ -133,7 +133,7 @@ function draw() {
 	  drawSprites(shrimpsprites);
 	
 	  //make villain sprites w/animation
-	  drawSprites(villainsprites);
+	  //drawSprites(villainsprites);
 	
 	  //make trash sprites
 	  drawSprites(trashsprites);
@@ -143,7 +143,7 @@ function draw() {
 	  stayinsketch();
 	  movespeed();
 	  keepscore();
-	  movevillains();
+	 // movevillains();
 	  movetrash();
 	  outoftime();
 	
@@ -156,31 +156,22 @@ function draw() {
 		
 		//if level 2
 		case 2:
+			
+		//make villains faster
+		xspeed = 3.0;
+	  yspeed = 2.4;
+			
     if((millis()>level2time) &&(millis()<level2time+100)){
 			makeshrimpsprites();
 			count = 0;
 		}
 		octopus.scale = 1;
-		//update map variable of amplitude and octopus y position
-	  soundmap = map(octopus.position.y,1496.36,3013.2,0.8,0.1);
-	
+			
 	  //update map variable of background color and octopus y position
-	  backmap = map(octopus.position.y,-20.5,3013.2,130,80);
+	  backmap = map(octopus.position.y,-20.5,3013.2,40,0);
 	
-	  //change amplitude and play sound depending on mapped y value
-	  //if in top half, keep quiet, loud in middle, then map it to get quiet as you go deeper
-	  //for seagulls, loud at top and silent by middle
-	  if(octopus.position.y<1496.35){
-		  var mapper2 = map(octopus.position.y,-20.5,1496.36,0.01,0.8);
-		  var smapper2 = map(octopus.position.y,-20.5,1496.36,0.8,0.01);
-		  oceansound.amp(mapper2);
-		  seagullsound.amp(smapper2);
-	  }else{
-		  oceansound.amp(soundmap);
-		  seagullsound.amp(0);
-	  }
-	  seagullsound.playMode('untilDone');
-	  seagullsound.play();
+	  //very quiet the whole time bc deeper
+	  oceansound.amp(0.1);
 	  oceansound.playMode('untilDone');
 	  oceansound.play();
 	
@@ -193,7 +184,7 @@ function draw() {
 	  }
 	
 	  //clear background and change darkness with "depth"
-	  background(0,30,backmap);
+	  background(0,10,backmap);
 	
 	  //make background w/stones
 	  drawSprites(backgd);
@@ -299,7 +290,7 @@ function makeobstaclesprites(){
 		var x = random(0, scenewidth);
 		var y = random(0, sceneheight);
 		//if the random val is at the position of a shrimp, get a different value so they don't overlap
-		while((((x+20==shrimpx)||(x-20 == shrimpx))&&((y+20==shrimpy)||(y-20 == shrimpy)))){
+		while(((((x+20)>shrimpx)&&((x-20) <shrimpx))&&(((y+20)>shrimpy)||((y-20) < shrimpy)))){
 			x = random(0, scenewidth);
 		  y = random(0, sceneheight);
 		}
