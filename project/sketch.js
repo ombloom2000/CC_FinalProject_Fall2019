@@ -11,6 +11,8 @@ var villainsound;
 var seagullsound;
 var bubblesound;
 var blehsound;
+var winsound;
+var losesound;
 var soundmap;
 var shrimpsprites;
 var shrimp;
@@ -52,6 +54,8 @@ function preload(){
 	villainsound = loadSound('villain.wav');
 	seagullsound = loadSound('seagull.wav');
 	bubblesound = loadSound('bubbles.wav');
+	winsound = loadSound('win.wav');
+	losesound = loadSound('lose.wav');
 	trashimg = loadImage('trash.png');
 	blehsound = loadSound('bleh.mp3');
 	obstacleimg = loadImage('obstacle.png');
@@ -427,7 +431,9 @@ function outoftime(){
 		fill(255);
 		textSize(70);
 		textFont('Helvetica');
-		text('YOU LOST', octopus.position.x,octopus.position.y);
+		text('YOU LOST', octopus.position.x-textWidth('YOU LOST'),octopus.position.y);
+		losesound.playMode('untilDone');
+		losesound.play();
 	}
 	}else if(level == 2){
 		fill(255);
@@ -441,7 +447,9 @@ function outoftime(){
 		fill(255);
 		textSize(70);
 		textFont('Helvetica');
-		text('YOU LOST', octopus.position.x,octopus.position.y);
+		text('YOU LOST', octopus.position.x-textWidth('YOU LOST'),octopus.position.y);
+		losesound.playMode('untilDone');
+		losesound.play();
 	}
 	}
 }
@@ -469,7 +477,9 @@ function checkscore(){
 		fill(255);
 		textSize(70);
 		textFont('Helvetica');
-		text('YOU WON', octopus.position.x,octopus.position.y);
+		text('YOU WON', octopus.position.x-textWidth('YOU WON'),octopus.position.y);
+		winsound.playMode('untilDone');
+		winsound.play();
 			}
 			break;
 	}
