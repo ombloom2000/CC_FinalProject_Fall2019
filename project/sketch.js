@@ -31,7 +31,6 @@ var xdirection;
 var ydirection;
 var direction;
 var backmap;
-var previouscount;
 var sizemap;
 var level;
 var obstacle;
@@ -133,7 +132,7 @@ function draw() {
 	  drawSprites(shrimpsprites);
 	
 	  //make villain sprites w/animation
-	  //drawSprites(villainsprites);
+	  drawSprites(villainsprites);
 	
 	  //make trash sprites
 	  drawSprites(trashsprites);
@@ -143,7 +142,7 @@ function draw() {
 	  stayinsketch();
 	  movespeed();
 	  keepscore();
-	 // movevillains();
+	  movevillains();
 	  movetrash();
 	  outoftime();
 	
@@ -215,7 +214,7 @@ function draw() {
 	  outoftime();
 	
 	  //test if overlapping with shrimps sprites, if so run eatshrimp function
-	  octopus.overlap(shrimpsprites, eatshrimp);
+	   octopus.overlap(shrimpsprites, eatshrimp);
 	
 	  //check to see if the score is 20/20
     checkscore();
@@ -349,7 +348,6 @@ function eatshrimp(collector,collected){
 
 function villainbump(){
 	//make a rectangle covering the screen, keep track of what the score was, set the score to zero
-	previouscount = count;
 	villainsound.amp(0.2);
 	villainsound.play();
 	var w = scenewidth+width+width;
@@ -359,7 +357,13 @@ function villainbump(){
 	count = 0;
 	//put back to original size
 	octopus.scale = 1;
-	spawnnewshrimp(previouscount);
+	//delete all remaining shrimp and make a new 20
+	for(i=0;i<shrimpsprites.length;i++){
+		var s = shrimpsprites[i];
+		s.remove();
+	}
+	makeshrimpsprites();
+	drawSprites(shrimpsprites);
 }
 
 function trashreact(){
@@ -368,18 +372,6 @@ function trashreact(){
 		octopus.changeAnimation('sick');
 	  blehsound.playMode('untilDone');
 	  blehsound.play();
-}
-
-function spawnnewshrimp(num){
-	for(i=0; i<num;i++){
-	//to make new shrimp when the score gets lowered from villain
-	 var newshrimp = createSprite(random(0, scenewidth), random(0, sceneheight));
-
-  //assign an animation and add to shrimp group
-   newshrimp.addAnimation('normal','shrimp001.png','shrimp002.png','shrimp003.png');
-	 shrimpsprites.add(newshrimp);
-	 print("added "+num+" new shrimp");
-	}
 }
 
 	function cameraposition(){
