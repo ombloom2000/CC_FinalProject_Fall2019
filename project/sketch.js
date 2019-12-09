@@ -443,7 +443,7 @@ function outoftime(){
 		text('Time: '+currenttime +' /120',octopus.position.x-395,octopus.position.y-320);
 		if(millis()>=120000){
 		noLoop();
-		background(0,50,100);
+		background(0,10,40);
 		fill(255);
 		textSize(70);
 		textFont('Helvetica');
@@ -473,7 +473,7 @@ function checkscore(){
 			if(count ==20){
 				noLoop();
 		oceansound.amp(0.0);
-		background(0,50,100);
+		background(0,10,40);
 		fill(255);
 		textSize(70);
 		textFont('Helvetica');
