@@ -1,4 +1,5 @@
 //declaring variables
+var indigofont;
 var octopus;
 var octoanimation;
 var sickanimation;
@@ -16,8 +17,6 @@ var losesound;
 var soundmap;
 var shrimpsprites;
 var shrimp;
-var shrimpsprites2;
-var shrimp2;
 var shrimpx;
 var shrimpy;
 var trash;
@@ -38,7 +37,7 @@ var level;
 var obstacle;
 var obstacleimg;
 var obstacles;
-var level2time;
+var currenttime;
 
 
 //preload to load animations
@@ -59,6 +58,7 @@ function preload(){
 	trashimg = loadImage('trash.png');
 	blehsound = loadSound('bleh.mp3');
 	obstacleimg = loadImage('obstacle.png');
+	indigofont = loadFont('indigo.otf');
 }
 
 //STATIC
@@ -235,7 +235,7 @@ function makebackgroundsprites(){
 	//create background
   for(var i=0; i<400; i++){
     //create sprite and add the 3 animations
-    var stone = createSprite(random(-width, scenewidth+width), random(-height, sceneheight+height));
+    var stone = createSprite(random(0, scenewidth), random(0, sceneheight));
 		
     //cycles through to choose stone 0, 1, or 2 for each round of the for loop and adds to Group
 		stone.addAnimation('normal', 'stone'+i%3+'.png');
@@ -259,7 +259,7 @@ function makeshrimpsprites(){
 	shrimpsprites = new Group();
 	
 	//create shrimp
-	for(var i=0; i<20;i++){
+	for(var i=0; i<30;i++){
 		//create shrimp sprite and animate it, put at a random location in the sketch
 		shrimpx = random(0, scenewidth);
 		shrimpy = random(0, sceneheight);
@@ -422,7 +422,7 @@ function outoftime(){
 	fill(255);
 	rect(octopus.position.x-400,octopus.position.y-340,140,30);
 	fill(0);
-	var currenttime = round(millis()/1000);
+	currenttime = round(millis()/1000);
 	if(level == 1){
 	text('Time: '+currenttime + ' /60',octopus.position.x-395,octopus.position.y-320);
 		if(millis()>=60000){
@@ -430,7 +430,7 @@ function outoftime(){
 		background(0,50,100);
 		fill(255);
 		textSize(70);
-		textFont('Helvetica');
+		textFont(indigofont);
 		text('YOU LOST', octopus.position.x-textWidth('YOU LOST'),octopus.position.y);
 		losesound.playMode('untilDone');
 		losesound.play();
@@ -446,7 +446,7 @@ function outoftime(){
 		background(0,10,40);
 		fill(255);
 		textSize(70);
-		textFont('Helvetica');
+		textFont(indigofont);
 		text('YOU LOST', octopus.position.x-textWidth('YOU LOST'),octopus.position.y);
 		losesound.playMode('untilDone');
 		losesound.play();
@@ -476,8 +476,9 @@ function checkscore(){
 		background(0,10,40);
 		fill(255);
 		textSize(70);
-		textFont('Helvetica');
+		textFont(indigofont);
 		text('YOU WON', octopus.position.x-textWidth('YOU WON'),octopus.position.y);
+		text('Time: '+ currenttime+' seconds', octopus.position.x-200,octopus.position.y+200);
 		winsound.playMode('untilDone');
 		winsound.play();
 			}
