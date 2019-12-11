@@ -38,6 +38,10 @@ var obstacle;
 var obstacleimg;
 var obstacles;
 var currenttime;
+var gui;
+var s;
+var winimg;
+var loseimg;
 
 
 //preload to load animations
@@ -47,7 +51,7 @@ function preload(){
 	//create an animation for octopus from img 001 to 005
 	octoanimation = octopus.addAnimation('float','octopus001.png', 'octopus005.png');
 	sickanimation = octopus.addAnimation('sick','sick001.png','sick005.png');
-	//load sound to be manipulated
+	//load sound, font, images to be manipulated
 	oceansound = loadSound('water.wav');
 	chompsound = loadSound('chomp.wav');
 	villainsound = loadSound('villain.wav');
@@ -59,12 +63,20 @@ function preload(){
 	blehsound = loadSound('bleh.mp3');
 	obstacleimg = loadImage('obstacle.png');
 	indigofont = loadFont('indigo.otf');
+	winimg = loadImage('octopus003.png');
+	loseimg = loadImage('sick003.png');
 }
 
 //STATIC
 function setup(){
 	//create canvas
   createCanvas(900,900); 
+	
+	//create GUI slider that shows progress on eating shrimp
+	gui = createGui();
+	s = createSlider("Slider",0,0,250,20, 0, 20);
+	noStroke();
+	s.setStyle("fillBg",255);
 	
 	//instantiation of variables
 	scenewidth = 3000; 
@@ -88,7 +100,6 @@ function setup(){
 
 //ACTIVE
 function draw() {
-	
 	switch(level){
 		//if level 1
 		case 1:
@@ -97,10 +108,15 @@ function draw() {
 	
 	  //update map variable of background color and octopus y position
 	  backmap = map(octopus.position.y,-20.5,3013.2,130,80);
+		
+		//keep slider in upper right corner
+	  s.x = octopus.position.x-400;
+	  s.y = octopus.position.y-275;
 	
 	  //change amplitude and play sound depending on mapped y value
 	  //if in top half, keep quiet, loud in middle, then map it to get quiet as you go deeper
 	  //for seagulls, loud at top and silent by middle
+		//keeping seagulls after 1st crit, hepls user know they are near the surface
 	  if(octopus.position.y<1496.35){
 		  var mapper = map(octopus.position.y,-20.5,1496.36,0.01,0.8);
 		  var smapper = map(octopus.position.y,-20.5,1496.36,0.8,0.01);
@@ -136,17 +152,20 @@ function draw() {
 	  drawSprites(shrimpsprites);
 	
 	  //make villain sprites w/animation
-	  drawSprites(villainsprites);
+	  //drawSprites(villainsprites);
 	
 	  //make trash sprites
 	  drawSprites(trashsprites);
+		
+		//make gui and set to count variable
+		drawGui();
+		s.val = count;
 	
 	  //call functions
 	  cameraposition();
 	  stayinsketch();
 	  movespeed();
-	  keepscore();
-	  movevillains();
+	 // movevillains();
 	  movetrash();
 	  outoftime();
 	
@@ -172,6 +191,10 @@ function draw() {
 			
 	  //update map variable of background color and octopus y position
 	  backmap = map(octopus.position.y,-20.5,3013.2,40,0);
+			
+		//keep slider in upper right corner
+	  s.x = octopus.position.x-400;
+	  s.y = octopus.position.y-260;
 	
 	  //very quiet the whole time bc deeper
 	  oceansound.amp(0.1);
@@ -199,7 +222,7 @@ function draw() {
 	  drawSprites(shrimpsprites);
 	
 	  //make villain sprites w/animation
-	  drawSprites(villainsprites);
+	  //drawSprites(villainsprites);
 	
 	  //make trash sprites
 	  drawSprites(trashsprites);
@@ -207,13 +230,16 @@ function draw() {
 		//make obstacles and make them collision-prone
 	  drawSprites(obstacles);
 	  octopus.collide(obstacles);
+			
+		//make gui and set to count variable
+		drawGui();
+		s.val = count;
 	
 	  //call functions
 	  cameraposition();
 	  stayinsketch();
 	  movespeed();
-	  keepscore();
-	  movevillains();
+	  //movevillains();
 	  movetrash();
 	  outoftime();
 	
@@ -267,6 +293,13 @@ function makeshrimpsprites(){
 		
 		//animates and adds to Group
 		shrimp.addAnimation('normal','shrimp001.png','shrimp002.png','shrimp003.png');
+		//half of shrimp face other X direction, one third face other y direction
+		if(i%2==0){
+			shrimp.mirrorX(-1);
+		}
+		if(i%3==0){
+			shrimp.mirrorY(-1);
+		}
 		shrimpsprites.add(shrimp);
 	}
 }
@@ -403,18 +436,9 @@ function stayinsketch(){
 function movespeed(){
 	//virtual camera movement is effected by the mouse
 	//speed is inversely proportional to the mouse distance, further mouse gets, faster the scene moves
+	//discussed not having this in crit, but I want to keep it because it makes it harder
   octopus.velocity.x = (camera.mouseX-octopus.position.x)/20;
   octopus.velocity.y = (camera.mouseY-octopus.position.y)/20;
-}
-
-function keepscore(){
-	//print the current score out of 20
-	noStroke();
-	fill(255);
-	textSize(20);
-	rect(octopus.position.x-400,octopus.position.y-370,80,30);
-	fill(0);
-	text(count+' / 20',octopus.position.x-395,octopus.position.y-350);
 }
 
 function outoftime(){
@@ -423,15 +447,18 @@ function outoftime(){
 	rect(octopus.position.x-400,octopus.position.y-340,140,30);
 	fill(0);
 	currenttime = round(millis()/1000);
+	textFont(indigofont);
+	textSize(20);
 	if(level == 1){
 	text('Time: '+currenttime + ' /60',octopus.position.x-395,octopus.position.y-320);
-		if(millis()>=60000){
+		if(currenttime>=60){
 		noLoop();
 		background(0,50,100);
 		fill(255);
 		textSize(70);
 		textFont(indigofont);
-		text('YOU LOST', octopus.position.x-textWidth('YOU LOST'),octopus.position.y);
+		text('YOU LOST', octopus.position.x-300,octopus.position.y-200);
+		image(loseimg,octopus.position.x,octopus.position.y);
 		losesound.playMode('untilDone');
 		losesound.play();
 	}
@@ -441,13 +468,14 @@ function outoftime(){
 		fill(0);
 	  text('Level 2', octopus.position.x-395,octopus.position.y-290);
 		text('Time: '+currenttime +' /120',octopus.position.x-395,octopus.position.y-320);
-		if(millis()>=120000){
+		if(currenttime>=120){
 		noLoop();
 		background(0,10,40);
 		fill(255);
 		textSize(70);
 		textFont(indigofont);
-		text('YOU LOST', octopus.position.x-textWidth('YOU LOST'),octopus.position.y);
+		text('YOU LOST', octopus.position.x-300,octopus.position.y-200);
+		image(loseimg,octopus.position.x,octopus.position.y);
 		losesound.playMode('untilDone');
 		losesound.play();
 	}
@@ -477,8 +505,9 @@ function checkscore(){
 		fill(255);
 		textSize(70);
 		textFont(indigofont);
-		text('YOU WON', octopus.position.x-textWidth('YOU WON'),octopus.position.y);
-		text('Time: '+ currenttime+' seconds', octopus.position.x-200,octopus.position.y+200);
+		text('YOU WON', octopus.position.x-300,octopus.position.y-200);
+		text('Time: '+ currenttime+' seconds', octopus.position.x-300,octopus.position.y+300);
+		image(winimg,octopus.position.x,octopus.position.y);
 		winsound.playMode('untilDone');
 		winsound.play();
 			}
