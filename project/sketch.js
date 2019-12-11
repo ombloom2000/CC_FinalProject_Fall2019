@@ -42,7 +42,7 @@ var gui;
 var s;
 var winimg;
 var loseimg;
-
+var totalshrimp;
 
 //preload to load animations
 function preload(){
@@ -84,6 +84,7 @@ function setup(){
 	level = 1;
 	//call functions
 	makebackgroundsprites();
+	totalshrimp = 30;
 	makeshrimpsprites();
 	makevillainsprites();
 	maketrashsprites();
@@ -152,7 +153,7 @@ function draw() {
 	  drawSprites(shrimpsprites);
 	
 	  //make villain sprites w/animation
-	  //drawSprites(villainsprites);
+	  drawSprites(villainsprites);
 	
 	  //make trash sprites
 	  drawSprites(trashsprites);
@@ -160,12 +161,12 @@ function draw() {
 		//make gui and set to count variable
 		drawGui();
 		s.val = count;
-	
+
 	  //call functions
 	  cameraposition();
 	  stayinsketch();
 	  movespeed();
-	 // movevillains();
+	  movevillains();
 	  movetrash();
 	  outoftime();
 	
@@ -184,10 +185,14 @@ function draw() {
 	  yspeed = 2.4;
 			
     if((millis()>level2time) &&(millis()<level2time+100)){
+			//put shrimp back to 30
+			totalshrimp = 30;
 			makeshrimpsprites();
+			//set score back to 0
 			count = 0;
+			//set scale back to one
+			octopus.scale = 1;
 		}
-		octopus.scale = 1;
 			
 	  //update map variable of background color and octopus y position
 	  backmap = map(octopus.position.y,-20.5,3013.2,40,0);
@@ -222,7 +227,7 @@ function draw() {
 	  drawSprites(shrimpsprites);
 	
 	  //make villain sprites w/animation
-	  //drawSprites(villainsprites);
+	  drawSprites(villainsprites);
 	
 	  //make trash sprites
 	  drawSprites(trashsprites);
@@ -239,7 +244,7 @@ function draw() {
 	  cameraposition();
 	  stayinsketch();
 	  movespeed();
-	  //movevillains();
+	  movevillains();
 	  movetrash();
 	  outoftime();
 	
@@ -285,7 +290,7 @@ function makeshrimpsprites(){
 	shrimpsprites = new Group();
 	
 	//create shrimp
-	for(var i=0; i<30;i++){
+	for(var i=0; i<totalshrimp;i++){
 		//create shrimp sprite and animate it, put at a random location in the sketch
 		shrimpx = random(0, scenewidth);
 		shrimpy = random(0, sceneheight);
@@ -371,7 +376,7 @@ function movetrash(){
 
 function eatshrimp(collector,collected){
 	//scale octopus according to how many shrimp eaten
-	sizemap = map(count,1,20,1,2);
+	sizemap = map(count,1,totalshrimp,1,2);
 	octopus.scale = sizemap;
 	octopus.changeAnimation('float');
 	//increase score
@@ -384,17 +389,21 @@ function eatshrimp(collector,collected){
 }
 
 function villainbump(){
-	//make a rectangle covering the screen, keep track of what the score was, set the score to zero
+	//make a rectangle covering the screen, reduce the score by 1 (or more if you stay covering the villain), remove old shrimp and spawn a new 30
 	villainsound.amp(0.2);
 	villainsound.play();
 	var w = scenewidth+width+width;
 	var h = sceneheight+height+height;
 	fill(230,255,0);
 	rect(-width,-height,w,h);
-	count = 0;
+	count = count-1;
+	//make sure score doesn't go below 0
+	if(count<=0){
+		count = 0;
+	}
 	//put back to original size
 	octopus.scale = 1;
-	//delete all remaining shrimp and make a new 20
+	//delete all remaining shrimp and make a new 30
 	for(i=0;i<shrimpsprites.length;i++){
 		var s = shrimpsprites[i];
 		s.remove();
@@ -409,8 +418,14 @@ function trashreact(){
 		octopus.changeAnimation('sick');
 	  blehsound.playMode('untilDone');
 	  blehsound.play();
+	  ink();
 }
 
+function ink(){
+	//cover screen with nearly opaque surface, makes it harder to see when you run into trash
+	    fill(75,0,130,230);
+			rect(-900,-900,4800,4800);
+}
 	function cameraposition(){
 	//set the camera position to the octopus position so the camera keeps the octopus in frame
   camera.position.x =octopus.position.x;
